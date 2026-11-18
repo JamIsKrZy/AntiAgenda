@@ -5,7 +5,7 @@ import streamlit as st
 from final_proj_chatbot.pages.templates.character_ui import blocks, confirm_delete, portrait_html
 from final_proj_chatbot.models.Character import Character
 from final_proj_chatbot.models.CharacterRepository import get_character_repo
-from final_proj_chatbot.routes import CREATE, DETAILS, EDIT, go
+from final_proj_chatbot.routes import CREATE, DETAILS, go
 from final_proj_chatbot.styles.style import inject_styles
 
 st.set_page_config(
@@ -37,13 +37,14 @@ def render_card(character: Character) -> None:
             ),
             unsafe_allow_html=True,
         )
-        details_col, edit_col, delete_col = st.columns([3, 1, 1], gap="small")
-        if details_col.button("Details", key=f"view_{character.id}", width="stretch"):
-            go(DETAILS, character.id)
-        if edit_col.button(
-            "", icon=":material/edit:", key=f"edit_{character.id}", help="Edit", width="stretch"
+        if st.button(
+            f"Open details for {character.name}",
+            key=f"open_{character.id}",
+            type="tertiary",
+            width="stretch",
         ):
-            go(EDIT, character.id)
+            go(DETAILS, character.id)
+        _, delete_col = st.columns([4, 1], gap="small")
         if delete_col.button(
             "", icon=":material/delete:", key=f"del_{character.id}", help="Delete", width="stretch"
         ):

@@ -161,7 +161,7 @@ def _resolve_spotlight_hex(
 
 
 _FONTS = """
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800');
 """
 
 _CSS = """
@@ -195,6 +195,7 @@ _CSS = """
   --accent-glow: __ACCENT_GLOW__;
   --accent-tint: __ACCENT_TINT__;
   --danger: #E58A8A;
+  --hit-red: #FF3B3B;
   --radius: __RADIUS__;
   --gravel: __GRAVEL__;
   --gravel-opacity: __GRAVEL_OPACITY__;
@@ -288,7 +289,7 @@ html, body, .stApp, [data-testid="stAppViewContainer"], p, label, input, textare
 }
 
 [data-testid="stHeader"] { background: transparent; }
-[data-testid="stMainBlockContainer"] { max-width: var(--max-width); padding-top: 5rem; }
+[data-testid="stMainBlockContainer"] { max-width: var(--max-width); padding-top: 4.5rem; }
 
 @media (prefers-reduced-motion: reduce) {
   .stApp::before {
@@ -364,6 +365,62 @@ div[data-baseweb="input"]:focus-within {
 }
 [data-testid="stToast"] { border-radius: var(--radius); }
 
+/* ---------- character collection cards ---------- */
+[class*="st-key-char_card_"] {
+  position: relative;
+}
+[class*="st-key-char_card_"] [class*="st-key-open_"] {
+  position: absolute !important;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+[class*="st-key-char_card_"] [class*="st-key-open_"] [data-testid="stButton"] {
+  width: 100%;
+  height: 100%;
+}
+[class*="st-key-char_card_"] [class*="st-key-open_"] [data-testid="stButton"] > div {
+  width: 100%;
+  height: 100%;
+}
+[class*="st-key-char_card_"] [class*="st-key-open_"] button {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+[class*="st-key-char_card_"] [class*="st-key-open_"] button:focus-visible {
+  opacity: .08;
+  background: var(--accent);
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+[class*="st-key-char_card_"] [class*="st-key-del_"] {
+  position: relative;
+  z-index: 2;
+}
+.pw-card-name {
+  margin-top: .75rem;
+  color: var(--ink);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.pw-card-origin {
+  margin-top: .2rem;
+  color: var(--ink-soft);
+  font-size: .85rem;
+  line-height: 1.4;
+}
+
 /* ---------- buttons ---------- */
 button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
@@ -422,7 +479,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 }
 .st-key-powerups_row button p { font-size: .8rem; font-weight: 500; }
 .st-key-powerups_row button:hover { border-color: var(--accent); }
-.st-key-powerups_row [data-testid="stPopover"] button {   /* the "Add" chip */
+.st-key-powerups_row [data-testid="stPopover"] button {
   background: transparent;
   border-style: dashed;
   color: var(--accent-ink);
@@ -502,6 +559,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* ---------- arena stage & fighter cards ---------- */
 .pw-fighter-frame {
+  position: relative;
   background: var(--surface);
   backdrop-filter: blur(var(--card-blur));
   -webkit-backdrop-filter: blur(var(--card-blur));
@@ -519,6 +577,80 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   box-shadow:
     0 18px 42px rgba(0, 0, 0, 0.58),
     0 0 24px var(--accent-glow);
+}
+
+/* Real-time damage shake + crimson impact glow (paired A/B keyframes force replay on consecutive hits) */
+@keyframes pw-hit-shake-a {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
+  12%  { transform: translate3d(-9px, -2px, 0) rotate(-1.4deg); }
+  26%  { transform: translate3d(9px, 2px, 0) rotate(1.4deg); }
+  40%  { transform: translate3d(-7px, 1px, 0) rotate(-1deg); }
+  56%  { transform: translate3d(6px, -1px, 0) rotate(0.8deg); }
+  72%  { transform: translate3d(-3px, 0, 0) rotate(-0.4deg); }
+  100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+}
+
+@keyframes pw-hit-shake-b {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
+  12%  { transform: translate3d(-9px, -2px, 0) rotate(-1.4deg); }
+  26%  { transform: translate3d(9px, 2px, 0) rotate(1.4deg); }
+  40%  { transform: translate3d(-7px, 1px, 0) rotate(-1deg); }
+  56%  { transform: translate3d(6px, -1px, 0) rotate(0.8deg); }
+  72%  { transform: translate3d(-3px, 0, 0) rotate(-0.4deg); }
+  100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+}
+
+@keyframes pw-hit-flash {
+  0%   { opacity: 0.72; }
+  100% { opacity: 0.14; }
+}
+
+@keyframes pw-dmg-pop {
+  0%   { opacity: 0; transform: translateY(8px) scale(0.85); }
+  25%  { opacity: 1; transform: translateY(-2px) scale(1.06); }
+  100% { opacity: 0.95; transform: translateY(0) scale(1); }
+}
+
+.pw-fighter-frame--damaged-a,
+.pw-fighter-frame--damaged-b {
+  border-color: var(--hit-red) !important;
+  box-shadow:
+    0 0 34px rgba(255, 42, 42, 0.72),
+    0 0 68px rgba(220, 20, 20, 0.34),
+    inset 0 0 26px rgba(255, 42, 42, 0.42) !important;
+}
+.pw-fighter-frame--damaged-a {
+  animation: pw-hit-shake-a 520ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+.pw-fighter-frame--damaged-b {
+  animation: pw-hit-shake-b 520ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.pw-damage-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  background: radial-gradient(circle at 50% 45%, rgba(255, 48, 48, 0.36) 0%, rgba(200, 12, 12, 0.72) 100%);
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation: pw-hit-flash 650ms ease-out forwards;
+}
+
+.pw-dmg-badge {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  z-index: 4;
+  padding: 0.25rem 0.6rem;
+  background: rgba(185, 16, 16, 0.94);
+  border: 1px solid #FF8A8A;
+  border-radius: var(--radius);
+  color: #FFFFFF;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  box-shadow: 0 4px 16px rgba(255, 36, 36, 0.65);
+  animation: pw-dmg-pop 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .pw-fighter-meta {
@@ -556,6 +688,11 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   letter-spacing: 0.01em;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
 }
+.pw-fighter-plate--damaged {
+  border-color: var(--hit-red);
+  border-left-color: var(--hit-red);
+  box-shadow: 0 0 18px rgba(255, 42, 42, 0.45);
+}
 
 /* Center VS emblem (large pre-fight, compact crown badge in-fight) */
 .pw-vs-wrap {
@@ -570,9 +707,15 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 }
 .pw-vs-wrap--crown {
   position: relative;
-  z-index: 3;
-  margin-bottom: -24px;
+  z-index: 5;
+  height: 56px;
+  margin-bottom: -28px;
   pointer-events: none;
+}
+.pw-vs-img {
+  display: block;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.7));
 }
 
 /* Prominent FIGHT trigger button */
@@ -596,17 +739,21 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     0 5px 0 rgba(0, 0, 0, 0.5);
 }
 
-/* ---------- center narration arena box ---------- */
+/* ---------- center narration arena box (strict fixed geometry) ---------- */
 .pw-narration-box {
   position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  height: 430px;
+  min-height: 430px;
+  max-height: 430px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  min-height: 410px;
   padding: 2.75rem 2rem 2rem;
-  background: linear-gradient(180deg, rgba(20, 23, 29, 0.88) 0%, var(--surface) 100%);
+  background: linear-gradient(180deg, rgba(20, 23, 29, 0.90) 0%, var(--surface) 100%);
   backdrop-filter: blur(var(--card-blur));
   -webkit-backdrop-filter: blur(var(--card-blur));
   border: 1px solid var(--edge-strong);
@@ -622,7 +769,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 @keyframes pw-narration-new {
   0% {
     opacity: 0;
-    transform: translateY(18px) scale(0.94);
+    transform: translateY(16px) scale(0.95);
   }
   100% {
     opacity: 1;
@@ -633,10 +780,10 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 @keyframes pw-narration-old {
   0% {
     opacity: 0.95;
-    transform: translateY(24px) scale(1.12);
+    transform: translateY(20px) scale(1.08);
   }
   100% {
-    opacity: 0.42;
+    opacity: 0.44;
     transform: translateY(0) scale(1);
   }
 }
@@ -645,31 +792,38 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.45rem;
-  margin-bottom: 1.1rem;
-  max-width: 90%;
+  width: 100%;
+  min-height: 4.6rem;
+  margin-bottom: 1rem;
 }
 
 .pw-narration-prev {
-  font-size: 0.98rem;
+  width: 100%;
+  font-size: 0.95rem;
   font-weight: 500;
   color: var(--ink-soft);
-  opacity: 0.42;
-  line-height: 1.4;
+  opacity: 0.44;
+  line-height: 1.38;
+  white-space: normal;
+  overflow-wrap: break-word;
   animation: pw-narration-old 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .pw-narration-prev--faded {
   font-size: 0.82rem;
-  opacity: 0.20;
+  opacity: 0.22;
 }
 
 .pw-narration-current {
-  font-size: 1.55rem;
+  width: 100%;
+  font-size: clamp(1.2rem, 1.75vw, 1.55rem);
   font-weight: 700;
   line-height: 1.35;
   color: var(--ink);
-  max-width: 92%;
+  white-space: normal;
+  overflow-wrap: break-word;
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.65);
   animation: pw-narration-new 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -681,6 +835,116 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   letter-spacing: 0.02em;
 }
 
+/* ---------- post-fight summary & nerd telemetry ---------- */
+.pw-summary-banner {
+  margin-top: 1.5rem;
+  padding: 1.4rem 1.6rem;
+  background: linear-gradient(90deg, var(--accent-tint) 0%, var(--surface) 45%, var(--surface) 100%);
+  backdrop-filter: blur(var(--card-blur));
+  -webkit-backdrop-filter: blur(var(--card-blur));
+  border: 1px solid var(--edge-strong);
+  border-left: 4px solid var(--accent);
+  border-top-color: var(--edge-lit);
+  border-radius: var(--radius);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.48);
+}
+
+.pw-summary-kicker {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent-ink);
+  margin-bottom: 0.25rem;
+}
+
+.pw-summary-verdict {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--ink);
+  margin: 0 0 0.65rem;
+}
+
+.pw-summary-prose {
+  font-size: 0.96rem;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.pw-kpi-card {
+  background: var(--surface);
+  backdrop-filter: blur(var(--card-blur));
+  -webkit-backdrop-filter: blur(var(--card-blur));
+  border: 1px solid var(--edge);
+  border-top-color: var(--edge-lit);
+  border-radius: var(--radius);
+  padding: 0.95rem 1.1rem;
+  height: 100%;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.36);
+}
+
+.pw-kpi-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink-soft);
+  margin-bottom: 0.35rem;
+}
+
+.pw-kpi-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.pw-kpi-sub {
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  margin-top: 0.3rem;
+}
+
+.pw-log-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--raised);
+  border: 1px solid var(--edge);
+  border-left: 3px solid var(--edge-strong);
+  border-radius: var(--radius);
+  margin-bottom: 0.5rem;
+}
+.pw-log-row--hit {
+  border-left-color: var(--hit-red);
+}
+.pw-log-turn {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--accent-ink);
+  text-transform: uppercase;
+}
+.pw-log-text {
+  font-size: 0.92rem;
+  color: var(--ink);
+  line-height: 1.45;
+  margin-top: 0.15rem;
+}
+.pw-log-metrics {
+  flex-shrink: 0;
+  text-align: right;
+  font-size: 0.76rem;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+.pw-log-dmg {
+  color: #FF7B7B;
+  font-weight: 700;
+}
 """
 
 
@@ -694,14 +958,12 @@ def inject_styles(
     Extra visual settings can be configured in `.streamlit/arena_theme.toml` (`[arena]`)
     or passed as keyword overrides to `inject_styles(...)`.
     """
-    # 1. Read active Streamlit [theme] options from config.toml
     primary = st.get_option("theme.primaryColor") or "#e0aa2d"
     bg = st.get_option("theme.backgroundColor") or "#1d1715"
     surface_hex = st.get_option("theme.secondaryBackgroundColor") or "#271d1c"
     text = st.get_option("theme.textColor") or "#E4E8EE"
     radius = _normalize_radius(st.get_option("theme.baseRadius"))
 
-    # 2. Load optional arena_theme.toml + apply any direct keyword overrides
     cfg_file = _load_arena_toml()
     arena_cfg = {**cfg_file.get("arena", {}), **overrides}
     custom_scales = cfg_file.get("scales", {})
@@ -719,7 +981,6 @@ def inject_styles(
     total_pulse_s = max(0.2, pulse_out_s + pulse_in_s)
     peak_pct = f"{(pulse_out_s / total_pulse_s) * 100:.2f}%"
 
-    # 3. Derive full UI & arena lighting palette from config.toml colors
     spot_hex = _resolve_spotlight_hex(scale, primary, custom_scales)
     rim_hex = _mix(spot_hex, text, 0.42)
 
