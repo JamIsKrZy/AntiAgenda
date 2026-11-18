@@ -499,6 +499,188 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   border-color: var(--accent-hover);
   color: var(--accent-fg);
 }
+
+/* ---------- arena stage & fighter cards ---------- */
+.pw-fighter-frame {
+  background: var(--surface);
+  backdrop-filter: blur(var(--card-blur));
+  -webkit-backdrop-filter: blur(var(--card-blur));
+  border: 1px solid var(--edge-strong);
+  border-top-color: var(--edge-lit);
+  border-radius: var(--radius);
+  padding: 0.55rem;
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.52),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+.pw-fighter-frame--active {
+  border-color: var(--edge-lit);
+  box-shadow:
+    0 18px 42px rgba(0, 0, 0, 0.58),
+    0 0 24px var(--accent-glow);
+}
+
+.pw-fighter-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  background: var(--field);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+  font-size: 0.76rem;
+  color: var(--ink-soft);
+}
+.pw-fighter-tag {
+  font-weight: 600;
+  color: var(--accent-ink);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.7rem;
+}
+
+/* Locked fighter nameplate shown underneath portraits during a fight */
+.pw-fighter-plate {
+  margin-top: 0.65rem;
+  padding: 0.55rem 0.85rem;
+  background: var(--surface);
+  border: 1px solid var(--edge-strong);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  color: var(--ink);
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+
+/* Center VS emblem (large pre-fight, compact crown badge in-fight) */
+.pw-vs-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  user-select: none;
+}
+.pw-vs-wrap--lobby {
+  min-height: 290px;
+}
+.pw-vs-wrap--crown {
+  position: relative;
+  z-index: 3;
+  margin-bottom: -24px;
+  pointer-events: none;
+}
+
+/* Prominent FIGHT trigger button */
+.st-key-fight_btn_wrap {
+  margin-top: 0.5rem;
+}
+.st-key-fight_btn_wrap [data-testid="stBaseButton-primary"] {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.8rem 1.5rem;
+  box-shadow:
+    0 6px 22px var(--accent-glow),
+    0 4px 0 rgba(0, 0, 0, 0.45);
+}
+.st-key-fight_btn_wrap [data-testid="stBaseButton-primary"]:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 8px 28px var(--accent-glow),
+    0 5px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* ---------- center narration arena box ---------- */
+.pw-narration-box {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 410px;
+  padding: 2.75rem 2rem 2rem;
+  background: linear-gradient(180deg, rgba(20, 23, 29, 0.88) 0%, var(--surface) 100%);
+  backdrop-filter: blur(var(--card-blur));
+  -webkit-backdrop-filter: blur(var(--card-blur));
+  border: 1px solid var(--edge-strong);
+  border-top-color: var(--edge-lit);
+  border-radius: var(--radius);
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.56),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 0 48px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+@keyframes pw-narration-new {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pw-narration-old {
+  0% {
+    opacity: 0.95;
+    transform: translateY(24px) scale(1.12);
+  }
+  100% {
+    opacity: 0.42;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pw-narration-history {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 1.1rem;
+  max-width: 90%;
+}
+
+.pw-narration-prev {
+  font-size: 0.98rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  opacity: 0.42;
+  line-height: 1.4;
+  animation: pw-narration-old 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.pw-narration-prev--faded {
+  font-size: 0.82rem;
+  opacity: 0.20;
+}
+
+.pw-narration-current {
+  font-size: 1.55rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--ink);
+  max-width: 92%;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.65);
+  animation: pw-narration-new 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.pw-narration-placeholder {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ink-faint);
+  letter-spacing: 0.02em;
+}
+
 """
 
 
