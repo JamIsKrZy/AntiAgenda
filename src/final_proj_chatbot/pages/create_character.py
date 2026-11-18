@@ -1,24 +1,13 @@
 import streamlit as st
-from streamlit_local_storage import LocalStorage
+
+from final_proj_chatbot.pages.character_form import render_character_form
+from final_proj_chatbot.models.CharacterRepository import get_character_repo
+from final_proj_chatbot.styles.style import inject_styles
 
 st.set_page_config(
     page_title="Power Scaling - Character Build ❤️‍🔥❤️‍🔥❤️‍🔥",
-    layout="wide"
+    layout="wide",
 )
+inject_styles()
 
-
-
-col1, col2, col3 = st.columns([2, 1, 2])
-
-with col1:
-    with st.container(border=True, horizontal_alignment="center"):
-      st.header("Player 1")
-      st.header("Player 1")
-      st.header("Player 1")
-      st.header("Player 1")
-      
-
-with col3:
-    with st.container(border=True, horizontal_alignment="center"):
-      st.write("Player 2")
-      
+render_character_form(get_character_repo())
