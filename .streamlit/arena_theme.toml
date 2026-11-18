@@ -1,0 +1,18 @@
+[arena]
+gravel_opacity = 0.22        # 0.0 to 0.40
+gravel_frequency = 0.58      # lower = chunkier gravel (0.42), higher = finer grit (0.75)
+pulse_out_s = 1.0            # outward surge duration in seconds
+pulse_in_s = 3.0             # inward fade duration in seconds
+spotlight_intensity = 0.28   # core beam brightness (0.0 to 0.50)
+hue_shift_deg = 14           # subtle color temperature shift at peak beat
+card_opacity = 0.84          # translucency of profile/feats cards
+card_blur_px = 10            # backdrop blur behind cards
+max_width_px = 1100          # main container width
+
+# Optional custom spotlight colors per power-scaling tier (hex)
+[scales]
+street = "#8A9BB8"
+city = "#40A6CC"
+planetary = "#7A74E8"
+stellar = "#E08444"
+cosmic = "#A85CE4"

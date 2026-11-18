@@ -2,14 +2,13 @@ import streamlit as st
 from streamlit_local_storage import LocalStorage
 
 
-localS = LocalStorage()
+from final_proj_chatbot.styles.style import inject_styles
 
-user = localS.getItem("User")
-if user:
-    st.write(f"User found in local storage: {user}")
-else:
-    st.write("No user found in local storage")
-
+st.set_page_config(
+    page_title="Power Scaling - Arena",
+    layout="wide",
+)
+inject_styles()
 
 
 
